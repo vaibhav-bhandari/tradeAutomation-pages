@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChartinkAgent Report - 2026-10-21</title>
+    <style>
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            border-bottom: 3px solid #2196F3;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #2196F3;
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .meta-info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        h2 {
+            color: #1976D2;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E0E0E0;
+            font-size: 20px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card.new-entries {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .summary-card.fresh-entries {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .summary-card.ignored-entries {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .summary-card.total-stocks {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .summary-card h3 {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .summary-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0 0 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        th {
+            background-color: #2196F3;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #1976D2;
+        }
+        
+        td {
+            padding: 12px;
+            border: 1px solid #E0E0E0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .symbol {
+            font-weight: 600;
+            color: #1976D2;
+            font-size: 14px;
+        }
+        
+        .symbol-link {
+            color: #1976D2;
+            text-decoration: none;
+        }
+        
+        .symbol-link:hover {
+            text-decoration: underline;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-style: italic;
+        }
+        
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E0E0E0;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .alert-info {
+            background-color: #E3F2FD;
+            border: 1px solid #90CAF9;
+            color: #1565C0;
+        }
+        
+        .collapsible-section {
+            margin-bottom: 20px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .collapsible-header {
+            background-color: #f0f0f0;
+            padding: 15px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #E0E0E0;
+            font-weight: 600;
+            color: #1976D2;
+        }
+        
+        .collapsible-header:hover {
+            background-color: #e8e8e8;
+        }
+        
+        .collapsible-header .arrow {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .collapsible-header.active .arrow {
+            transform: rotate(90deg);
+        }
+        
+        .collapsible-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .collapsible-content.active {
+            max-height: 5000px;
+            padding: 15px;
+        }
+        
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .date-card {
+            border: 1px solid #E0E0E0;
+            border-radius: 6px;
+            padding: 12px;
+            background-color: #fafafa;
+        }
+        
+        .date-card-header {
+            font-weight: 600;
+            color: #1976D2;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .stock-item {
+            padding: 6px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .stock-item .symbol {
+            font-weight: 600;
+            color: #1976D2;
+        }
+        
+        .stock-item .details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        .percent-up {
+            color: #2E7D32;
+            font-weight: 600;
+        }
+        
+        .percent-down {
+            color: #C62828;
+            font-weight: 600;
+        }
+        
+        .percent-flat {
+            color: #616161;
+            font-weight: 600;
+        }
+        
+        .percent-na {
+            color: #9E9E9E;
+        }
+        
+        .flag-high {
+            color: #F9A825;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: help;
+        }
+        
+        .repeat-count {
+            display: inline-block;
+            color: #fa709a;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 4px;
+            cursor: help;
+            letter-spacing: 0.5px;
+        }
+        
+    </style>
+</head>
+<body>
+
+        <div class="container">
+            <header>
+                <h1>ChartinkAgent Daily Scan Report</h1>
+                <div class="meta-info">
+                    <div>Strategy: <strong>VRB BTST</strong></div>
+                    <div>Scan Date: <strong>2026-10-21</strong></div>
+                    <div>Report Generated: <strong>2026-10-21 10:16:26</strong></div>
+                    <div>CSV File: <strong>Backtest 211026.csv</strong></div>
+                </div>
+            </header>
+        
+
+            <div class="summary-grid">
+                <div class="summary-card total-stocks">
+                    <h3>Total Stocks Analyzed</h3>
+                    <div class="number">2</div>
+                </div>
+                <div class="summary-card new-entries">
+                    <h3>New Entries</h3>
+                    <div class="number">1</div>
+                </div>
+                <div class="summary-card fresh-entries">
+                    <h3>Fresh Entries</h3>
+                    <div class="number">0</div>
+                </div>
+                <div class="summary-card ignored-entries">
+                    <h3>Ignored (Recent Repeats)</h3>
+                    <div class="number">1</div>
+                </div>
+            </div>
+        
+
+            <h2>New Entries (1)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>% Change</th>
+                        <th>% Below 52W High</th>
+                        <th>Market Cap</th>
+                        <th>Sector</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr>
+                    <td class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TECHM" target="_blank" rel="noopener" class="symbol-link">TECHM</a></td>
+                    <td><span class="percent-up">+3.13%</span></td>
+                    <td><span class="percent-flat">-0.00%</span></td>
+                    <td>Largecap</td>
+                    <td>I.T</td>
+                </tr>
+            
+                </tbody>
+            </table>
+        
+<h2>Fresh Entries - Reappeared</h2><div class="no-data">No fresh entries detected</div>
+
+            <h2>Ignored - Recent Repeats (1)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>% Change</th>
+                        <th>% Below 52W High</th>
+                        <th>Market Cap</th>
+                        <th>Sector</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                <tr>
+                    <td class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAHASTEEL" target="_blank" rel="noopener" class="symbol-link">MAHASTEEL</a> <span class="repeat-count" title="Appeared 5 time(s) in last 60 days">(5)</span></td>
+                    <td><span class="percent-up">+4.83%</span></td>
+                    <td><span class="percent-down">-2.79%</span></td>
+                    <td>Smallcap</td>
+                    <td>Metals & Mining</td>
+                </tr>
+            
+                </tbody>
+            </table>
+        
+<div style="margin-top: 40px;">
+<h2>Last 7 Days History</h2>
+
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active');" style="background: linear-gradient(135deg, #f093fb44, #f093fb22);">
+                <span>New Entries (8)</span>
+                <span class="arrow">→</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="history-grid">
+                    
+            <div class="date-card">
+                <div class="date-card-header">2026-10-16 (3)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:INDHOTEL" target="_blank" rel="noopener" class="symbol-link">INDHOTEL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.13%</span> | Today: <span class="percent-down">-0.92%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Services
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:ONWARDTEC" target="_blank" rel="noopener" class="symbol-link">ONWARDTEC</a></span>
+                    <div class="details">
+                        <span class="percent-up">+19.99%</span> | Today: <span class="percent-down">-4.29%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:ORIENTHOT" target="_blank" rel="noopener" class="symbol-link">ORIENTHOT</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.27%</span> | Today: <span class="percent-down">-1.08%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Services
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-14 (1)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SPORTKING" target="_blank" rel="noopener" class="symbol-link">SPORTKING</a></span>
+                    <div class="details">
+                        <span class="percent-up">+7.75%</span> | Today: <span class="percent-down">-3.93%</span> | 52W High: <span class="percent-down">-2.05%</span> | Smallcap | Textiles
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-13 (1)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:UTTAMSUGAR" target="_blank" rel="noopener" class="symbol-link">UTTAMSUGAR</a></span>
+                    <div class="details">
+                        <span class="percent-up">+25.53%</span> | Today: <span class="percent-up">+7.94%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | FMCG
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-12 (2)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:DBOL" target="_blank" rel="noopener" class="symbol-link">DBOL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.37%</span> | Today: <span class="percent-up">+2.61%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:IVP" target="_blank" rel="noopener" class="symbol-link">IVP</a></span>
+                    <div class="details">
+                        <span class="percent-up">+11.22%</span> | Today: <span class="percent-down">-5.27%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-09 (1)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:VHLTD" target="_blank" rel="noopener" class="symbol-link">VHLTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.00%</span> | Today: <span class="percent-down">-4.99%</span> | 52W High: <span class="percent-down">-4.67%</span> | Smallcap | Services
+                    </div>
+                </div>
+                
+            </div>
+            
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active');" style="background: linear-gradient(135deg, #4facfe44, #4facfe22);">
+                <span>Fresh Entries (10)</span>
+                <span class="arrow">→</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="history-grid">
+                    
+            <div class="date-card">
+                <div class="date-card-header">2026-10-19 (1)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:FEDERALBNK" target="_blank" rel="noopener" class="symbol-link">FEDERALBNK</a> <span class="flag-high" title="6.15% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+3.21%</span> | Today: <span class="percent-down">-1.39%</span> | 52W High: <span class="percent-down">-6.15%</span> | Largecap | Bank
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-16 (1)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:WORTHPERI" target="_blank" rel="noopener" class="symbol-link">WORTHPERI</a></span>
+                    <div class="details">
+                        <span class="percent-up">+10.36%</span> | Today: <span class="percent-down">-5.63%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-14 (3)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:GAEL" target="_blank" rel="noopener" class="symbol-link">GAEL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.30%</span> | Today: <span class="percent-down">-2.54%</span> | 52W High: <span class="percent-down">-2.39%</span> | Midcap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:RAIN" target="_blank" rel="noopener" class="symbol-link">RAIN</a></span>
+                    <div class="details">
+                        <span class="percent-up">+7.89%</span> | Today: <span class="percent-down">-5.81%</span> | 52W High: <span class="percent-down">-2.44%</span> | Midcap | Miscellaneous
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SEJALLTD" target="_blank" rel="noopener" class="symbol-link">SEJALLTD</a> <span class="flag-high" title="11.28% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+20.00%</span> | Today: <span class="percent-down">-2.20%</span> | 52W High: <span class="percent-down">-11.28%</span> | Smallcap | Building Materials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-13 (1)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TIPSMUSIC" target="_blank" rel="noopener" class="symbol-link">TIPSMUSIC</a></span>
+                    <div class="details">
+                        <span class="percent-up">+11.09%</span> | Today: <span class="percent-down">-3.07%</span> | 52W High: <span class="percent-down">-0.95%</span> | Midcap | Media
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-12 (2)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:GOODLUCK" target="_blank" rel="noopener" class="symbol-link">GOODLUCK</a></span>
+                    <div class="details">
+                        <span class="percent-up">+13.21%</span> | Today: <span class="percent-down">-1.52%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:PNBHOUSING" target="_blank" rel="noopener" class="symbol-link">PNBHOUSING</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.63%</span> | Today: <span class="percent-down">-0.17%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Financials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-09 (2)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KRISHANA" target="_blank" rel="noopener" class="symbol-link">KRISHANA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.46%</span> | Today: <span class="percent-down">-1.59%</span> | 52W High: <span class="percent-down">-3.92%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAYURUNIQ" target="_blank" rel="noopener" class="symbol-link">MAYURUNIQ</a> <span class="flag-high" title="10.79% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+5.13%</span> | Today: <span class="percent-down">-4.55%</span> | 52W High: <span class="percent-down">-10.79%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+            </div>
+            
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="collapsible-section">
+            <div class="collapsible-header" onclick="this.classList.toggle('active'); this.nextElementSibling.classList.toggle('active');" style="background: linear-gradient(135deg, #fa709a44, #fa709a22);">
+                <span>Ignored (Recent Repeats) (75)</span>
+                <span class="arrow">→</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="history-grid">
+                    
+            <div class="date-card">
+                <div class="date-card-header">2026-10-19 (8)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:AUSOMENT" target="_blank" rel="noopener" class="symbol-link">AUSOMENT</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.58%</span> | Today: <span class="percent-down">-2.82%</span> | 52W High: <span class="percent-down">-2.25%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:GABRIEL" target="_blank" rel="noopener" class="symbol-link">GABRIEL</a> <span class="flag-high" title="6.40% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+2.57%</span> | Today: <span class="percent-down">-4.56%</span> | 52W High: <span class="percent-down">-6.40%</span> | Largecap | Auto
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KARURVYSYA" target="_blank" rel="noopener" class="symbol-link">KARURVYSYA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.05%</span> | Today: <span class="percent-down">-2.81%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Bank
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAHASTEEL" target="_blank" rel="noopener" class="symbol-link">MAHASTEEL</a> <span class="flag-high" title="7.27% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+4.99%</span> | Today: <span class="percent-up">+4.83%</span> | 52W High: <span class="percent-down">-7.27%</span> | Smallcap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:ONWARDTEC" target="_blank" rel="noopener" class="symbol-link">ONWARDTEC</a></span>
+                    <div class="details">
+                        <span class="percent-up">+6.07%</span> | Today: <span class="percent-down">-4.29%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SHYAMMETL" target="_blank" rel="noopener" class="symbol-link">SHYAMMETL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.34%</span> | Today: <span class="percent-down">-2.53%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SMARTLINK" target="_blank" rel="noopener" class="symbol-link">SMARTLINK</a></span>
+                    <div class="details">
+                        <span class="percent-up">+19.63%</span> | Today: <span class="percent-down">-12.41%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TIPSMUSIC" target="_blank" rel="noopener" class="symbol-link">TIPSMUSIC</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.32%</span> | Today: <span class="percent-down">-3.07%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Media
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-16 (10)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:AAREYDRUGS" target="_blank" rel="noopener" class="symbol-link">AAREYDRUGS</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.83%</span> | Today: <span class="percent-down">-1.70%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Healthcare
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:APOLLO" target="_blank" rel="noopener" class="symbol-link">APOLLO</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.85%</span> | Today: <span class="percent-down">-6.62%</span> | 52W High: <span class="percent-down">-4.68%</span> | Midcap | Aerospace & Defence
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KARURVYSYA" target="_blank" rel="noopener" class="symbol-link">KARURVYSYA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.89%</span> | Today: <span class="percent-down">-2.81%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Bank
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NAZARA" target="_blank" rel="noopener" class="symbol-link">NAZARA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.82%</span> | Today: <span class="percent-down">-1.31%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NITINSPIN" target="_blank" rel="noopener" class="symbol-link">NITINSPIN</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.17%</span> | Today: <span class="percent-down">-4.09%</span> | 52W High: <span class="percent-down">-0.19%</span> | Smallcap | Textiles
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:OAL" target="_blank" rel="noopener" class="symbol-link">OAL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+8.70%</span> | Today: <span class="percent-down">-3.19%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SHYAMMETL" target="_blank" rel="noopener" class="symbol-link">SHYAMMETL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.59%</span> | Today: <span class="percent-down">-2.53%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TBZ" target="_blank" rel="noopener" class="symbol-link">TBZ</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.00%</span> | Today: <span class="percent-down">-4.93%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TEXINFRA" target="_blank" rel="noopener" class="symbol-link">TEXINFRA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.36%</span> | Today: <span class="percent-down">-4.67%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Realty
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TIPSMUSIC" target="_blank" rel="noopener" class="symbol-link">TIPSMUSIC</a></span>
+                    <div class="details">
+                        <span class="percent-up">+9.13%</span> | Today: <span class="percent-down">-3.07%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Media
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-15 (6)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:HITECHCORP" target="_blank" rel="noopener" class="symbol-link">HITECHCORP</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.99%</span> | Today: <span class="percent-up">+0.26%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KRISHANA" target="_blank" rel="noopener" class="symbol-link">KRISHANA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.65%</span> | Today: <span class="percent-down">-1.59%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:OAL" target="_blank" rel="noopener" class="symbol-link">OAL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+10.87%</span> | Today: <span class="percent-down">-3.19%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SEJALLTD" target="_blank" rel="noopener" class="symbol-link">SEJALLTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+10.29%</span> | Today: <span class="percent-down">-2.20%</span> | 52W High: <span class="percent-down">-2.15%</span> | Smallcap | Building Materials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TBZ" target="_blank" rel="noopener" class="symbol-link">TBZ</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.00%</span> | Today: <span class="percent-down">-4.93%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TCPLPACK" target="_blank" rel="noopener" class="symbol-link">TCPLPACK</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.40%</span> | Today: <span class="percent-down">-5.14%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-14 (20)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:AKSHARCHEM" target="_blank" rel="noopener" class="symbol-link">AKSHARCHEM</a> <span class="flag-high" title="8.51% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+4.02%</span> | Today: <span class="percent-down">-4.99%</span> | 52W High: <span class="percent-down">-8.51%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:AURUM" target="_blank" rel="noopener" class="symbol-link">AURUM</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.43%</span> | Today: <span class="percent-down">-1.76%</span> | 52W High: <span class="percent-down">-3.44%</span> | Smallcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:BHEL" target="_blank" rel="noopener" class="symbol-link">BHEL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.89%</span> | Today: <span class="percent-down">-4.01%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:EIMCOELECO" target="_blank" rel="noopener" class="symbol-link">EIMCOELECO</a></span>
+                    <div class="details">
+                        <span class="percent-up">+9.59%</span> | Today: <span class="percent-down">-0.63%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:GOODLUCK" target="_blank" rel="noopener" class="symbol-link">GOODLUCK</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.25%</span> | Today: <span class="percent-down">-1.52%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:HITECHCORP" target="_blank" rel="noopener" class="symbol-link">HITECHCORP</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.00%</span> | Today: <span class="percent-up">+0.26%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KRISHANA" target="_blank" rel="noopener" class="symbol-link">KRISHANA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.58%</span> | Today: <span class="percent-down">-1.59%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAWANASUG" target="_blank" rel="noopener" class="symbol-link">MAWANASUG</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.81%</span> | Today: <span class="percent-up">+1.24%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAYURUNIQ" target="_blank" rel="noopener" class="symbol-link">MAYURUNIQ</a> <span class="flag-high" title="9.04% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+2.54%</span> | Today: <span class="percent-down">-4.55%</span> | 52W High: <span class="percent-down">-9.04%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAZDA" target="_blank" rel="noopener" class="symbol-link">MAZDA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.07%</span> | Today: <span class="percent-down">-5.15%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MODISONLTD" target="_blank" rel="noopener" class="symbol-link">MODISONLTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.96%</span> | Today: <span class="percent-down">-5.00%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NEOGEN" target="_blank" rel="noopener" class="symbol-link">NEOGEN</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.60%</span> | Today: <span class="percent-down">-4.91%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NITINSPIN" target="_blank" rel="noopener" class="symbol-link">NITINSPIN</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.46%</span> | Today: <span class="percent-down">-4.09%</span> | 52W High: <span class="percent-down">-1.89%</span> | Smallcap | Textiles
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NRAIL" target="_blank" rel="noopener" class="symbol-link">NRAIL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.67%</span> | Today: <span class="percent-down">-4.82%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Building Materials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:RUBYMILLS" target="_blank" rel="noopener" class="symbol-link">RUBYMILLS</a></span>
+                    <div class="details">
+                        <span class="percent-up">+10.00%</span> | Today: <span class="percent-down">-4.79%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Textiles
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SHYAMMETL" target="_blank" rel="noopener" class="symbol-link">SHYAMMETL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.01%</span> | Today: <span class="percent-down">-2.53%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:STOVEKRAFT" target="_blank" rel="noopener" class="symbol-link">STOVEKRAFT</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.49%</span> | Today: <span class="percent-down">-0.27%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:VHLTD" target="_blank" rel="noopener" class="symbol-link">VHLTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.77%</span> | Today: <span class="percent-down">-4.99%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Services
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:WHEELS" target="_blank" rel="noopener" class="symbol-link">WHEELS</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.57%</span> | Today: <span class="percent-down">-10.00%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Auto
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:WSTCSTPAPR" target="_blank" rel="noopener" class="symbol-link">WSTCSTPAPR</a></span>
+                    <div class="details">
+                        <span class="percent-up">+13.55%</span> | Today: <span class="percent-down">-5.80%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Building Materials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-13 (10)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:AUSOMENT" target="_blank" rel="noopener" class="symbol-link">AUSOMENT</a> <span class="flag-high" title="6.66% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+3.62%</span> | Today: <span class="percent-down">-2.82%</span> | 52W High: <span class="percent-down">-6.66%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:HITECHCORP" target="_blank" rel="noopener" class="symbol-link">HITECHCORP</a></span>
+                    <div class="details">
+                        <span class="percent-up">+6.40%</span> | Today: <span class="percent-up">+0.26%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KARURVYSYA" target="_blank" rel="noopener" class="symbol-link">KARURVYSYA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.56%</span> | Today: <span class="percent-down">-2.81%</span> | 52W High: <span class="percent-down">-1.62%</span> | Largecap | Bank
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KRISHANA" target="_blank" rel="noopener" class="symbol-link">KRISHANA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+0.16%</span> | Today: <span class="percent-down">-1.59%</span> | 52W High: <span class="percent-down">-3.77%</span> | Smallcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAWANASUG" target="_blank" rel="noopener" class="symbol-link">MAWANASUG</a></span>
+                    <div class="details">
+                        <span class="percent-up">+19.30%</span> | Today: <span class="percent-up">+1.24%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAZDA" target="_blank" rel="noopener" class="symbol-link">MAZDA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+11.41%</span> | Today: <span class="percent-down">-5.15%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MODISONLTD" target="_blank" rel="noopener" class="symbol-link">MODISONLTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+10.24%</span> | Today: <span class="percent-down">-5.00%</span> | 52W High: <span class="percent-down">-0.21%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NRAIL" target="_blank" rel="noopener" class="symbol-link">NRAIL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+18.54%</span> | Today: <span class="percent-down">-4.82%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Building Materials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:PNBHOUSING" target="_blank" rel="noopener" class="symbol-link">PNBHOUSING</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.77%</span> | Today: <span class="percent-down">-0.17%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | Financials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TFCILTD" target="_blank" rel="noopener" class="symbol-link">TFCILTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+7.92%</span> | Today: <span class="percent-down">-3.83%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Financials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-12 (15)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:AVADHSUGAR" target="_blank" rel="noopener" class="symbol-link">AVADHSUGAR</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.39%</span> | Today: <span class="percent-down">-4.15%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:BBOX" target="_blank" rel="noopener" class="symbol-link">BBOX</a> <span class="flag-high" title="14.25% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+3.64%</span> | Today: <span class="percent-up">+0.26%</span> | 52W High: <span class="percent-down">-14.25%</span> | Midcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:CARTRADE" target="_blank" rel="noopener" class="symbol-link">CARTRADE</a></span>
+                    <div class="details">
+                        <span class="percent-up">+8.14%</span> | Today: <span class="percent-down">-2.46%</span> | 52W High: <span class="percent-down">-2.35%</span> | Midcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:E2E" target="_blank" rel="noopener" class="symbol-link">E2E</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.39%</span> | Today: <span class="percent-down">-5.00%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAWANASUG" target="_blank" rel="noopener" class="symbol-link">MAWANASUG</a></span>
+                    <div class="details">
+                        <span class="percent-up">+15.26%</span> | Today: <span class="percent-up">+1.24%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MAYURUNIQ" target="_blank" rel="noopener" class="symbol-link">MAYURUNIQ</a> <span class="flag-high" title="8.79% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+2.25%</span> | Today: <span class="percent-down">-4.55%</span> | 52W High: <span class="percent-down">-8.79%</span> | Smallcap | Consumer Discretionary
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NAZARA" target="_blank" rel="noopener" class="symbol-link">NAZARA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+7.16%</span> | Today: <span class="percent-down">-1.31%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NEOGEN" target="_blank" rel="noopener" class="symbol-link">NEOGEN</a></span>
+                    <div class="details">
+                        <span class="percent-up">+6.57%</span> | Today: <span class="percent-down">-4.91%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Chemicals
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:NRAIL" target="_blank" rel="noopener" class="symbol-link">NRAIL</a></span>
+                    <div class="details">
+                        <span class="percent-up">+11.00%</span> | Today: <span class="percent-down">-4.82%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Building Materials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:PANACHE" target="_blank" rel="noopener" class="symbol-link">PANACHE</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.81%</span> | Today: <span class="percent-down">-1.99%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:SWANDEF" target="_blank" rel="noopener" class="symbol-link">SWANDEF</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.06%</span> | Today: <span class="percent-up">+0.37%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Midcap | Transportation
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TCPLPACK" target="_blank" rel="noopener" class="symbol-link">TCPLPACK</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.33%</span> | Today: <span class="percent-down">-5.14%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TFCILTD" target="_blank" rel="noopener" class="symbol-link">TFCILTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.21%</span> | Today: <span class="percent-down">-3.83%</span> | 52W High: <span class="percent-down">-0.31%</span> | Midcap | Financials
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:VHLTD" target="_blank" rel="noopener" class="symbol-link">VHLTD</a></span>
+                    <div class="details">
+                        <span class="percent-up">+5.00%</span> | Today: <span class="percent-down">-4.99%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Services
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:WSTCSTPAPR" target="_blank" rel="noopener" class="symbol-link">WSTCSTPAPR</a></span>
+                    <div class="details">
+                        <span class="percent-up">+20.00%</span> | Today: <span class="percent-down">-5.80%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Building Materials
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="date-card">
+                <div class="date-card-header">2026-10-09 (6)</div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:BBOX" target="_blank" rel="noopener" class="symbol-link">BBOX</a> <span class="flag-high" title="17.26% below 52-week high">★</span></span>
+                    <div class="details">
+                        <span class="percent-up">+4.15%</span> | Today: <span class="percent-up">+0.26%</span> | 52W High: <span class="percent-down">-17.26%</span> | Midcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:CUPID" target="_blank" rel="noopener" class="symbol-link">CUPID</a></span>
+                    <div class="details">
+                        <span class="percent-up">+2.65%</span> | Today: <span class="percent-up">+1.32%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Largecap | FMCG
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:KARURVYSYA" target="_blank" rel="noopener" class="symbol-link">KARURVYSYA</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.25%</span> | Today: <span class="percent-down">-2.81%</span> | 52W High: <span class="percent-down">-4.08%</span> | Largecap | Bank
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:MMP" target="_blank" rel="noopener" class="symbol-link">MMP</a></span>
+                    <div class="details">
+                        <span class="percent-up">+3.75%</span> | Today: <span class="percent-down">-4.88%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | Metals & Mining
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:PANACHE" target="_blank" rel="noopener" class="symbol-link">PANACHE</a></span>
+                    <div class="details">
+                        <span class="percent-up">+4.85%</span> | Today: <span class="percent-down">-1.99%</span> | 52W High: <span class="percent-flat">-0.00%</span> | Smallcap | I.T
+                    </div>
+                </div>
+                
+                <div class="stock-item">
+                    <span class="symbol"><a href="https://www.tradingview.com/chart/?symbol=NSE:TCPLPACK" target="_blank" rel="noopener" class="symbol-link">TCPLPACK</a></span>
+                    <div class="details">
+                        <span class="percent-up">+7.02%</span> | Today: <span class="percent-down">-5.14%</span> | 52W High: <span class="percent-down">-2.73%</span> | Smallcap | Industrials
+                    </div>
+                </div>
+                
+            </div>
+            
+                </div>
+            </div>
+        </div>
+        
+</div>
+
+            <footer>
+                <p>This report was automatically generated by ChartinkAgent.</p>
+                <p>★ = more than 5% below the 52-week high</p>
+                <p>For issues or support, please visit the project repository.</p>
+            </footer>
+        </div>
+        
+</body>
+</html>
